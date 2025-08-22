@@ -9,26 +9,20 @@
 <div>
 	{#if $session.data}
 		<div>
-			<p>
-				Welcome, {$session?.data?.user.name || $session?.data?.user.email}!
-			</p>
+			<p>Welcome, {$session?.data?.user.name || $session?.data?.user.email}!</p>
 			<button
-				on:click={async () => {
+				onclick={async () => {
 					await authClient.signOut();
 				}}
-			>
-				Sign Out
+				>Sign Out
 			</button>
 		</div>
 	{:else}
 		<button
-			on:click={async () => {
-				await authClient.signIn.social({
-					provider: 'discord'
-				});
+			onclick={async () => {
+				await authClient.signIn.social({ provider: 'discord' });
 			}}
-		>
-			Continue with Discord
+			>Continue with Discord
 		</button>
 	{/if}
 </div>
