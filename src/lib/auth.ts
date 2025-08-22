@@ -1,13 +1,17 @@
-import { betterAuth } from "better-auth";
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { sveltekitCookies } from 'better-auth/svelte-kit';
+import { getRequestEvent } from '$app/server';
+import { BETTER_AUTH_SECRET, BETTER_AUTH_URL } from '$env/static/private';
+import { db } from './server/db';
 
 export const auth = betterAuth({
-  database: {
-    // Add your database configuration here
-    // For example, if using Drizzle with libSQL:
-    // provider: "sqlite",
-    // url: process.env.DATABASE_URL!,
-  },
-  secret: process.env.BETTER_AUTH_SECRET!,
-  baseURL: process.env.BETTER_AUTH_URL!,
-  // Add other configuration options as needed
+	database: drizzleAdapter(db, {
+		provider: 'sqlite' // for libSQL/Turso
+	}),
+	secret: BETTER_AUTH_SECRET,
+	baseURL: BETTER_AUTH_URL,
+	plugins: [
+		sveltekitCookies(getRequestEvent) // SvelteKit cookie handling - must be last plugin
+	]
 });
