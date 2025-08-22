@@ -1,3 +1,8 @@
+# Checklist
+
+- [x] figure out a MD lib to use
+- [ ] Goal: build the final day app from scratch (based on DeepSearch final day already migrated to AI SDK v5)
+
 # sv
 
 Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
