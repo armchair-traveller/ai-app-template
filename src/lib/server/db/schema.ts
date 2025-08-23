@@ -1,4 +1,4 @@
-import { sqliteTableCreator, text, integer, index, primaryKey } from 'drizzle-orm/sqlite-core';
+import { sqliteTableCreator, text, integer, index } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 
@@ -11,12 +11,9 @@ import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 export const createTable = sqliteTableCreator((name) => `ai-app-template_${name}`);
 
 export const user = createTable('user', {
-	id: text('id', { length: 255 })
-		.notNull()
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
+	id: text('id').primaryKey(),
 	name: text('name', { length: 255 }),
-	email: text('email', { length: 255 }).notNull().unique(),
+	email: text('email', { length: 255 }).notNull(),
 	emailVerified: integer('email_verified', { mode: 'boolean' })
 		.$defaultFn(() => false)
 		.notNull(),
@@ -39,10 +36,7 @@ export const userRelations = relations(user, ({ many }) => ({
 export const session = createTable(
 	'session',
 	{
-		id: text('id', { length: 255 })
-			.notNull()
-			.primaryKey()
-			.$defaultFn(() => crypto.randomUUID()),
+		id: text('id').primaryKey(),
 		expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
 		token: text('token', { length: 255 }).notNull().unique(),
 		createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
@@ -63,6 +57,7 @@ export const sessionRelations = relations(session, ({ one }) => ({
 export const account = createTable(
 	'account',
 	{
+		id: text('id').primaryKey(),
 		userId: text('user_id', { length: 255 })
 			.notNull()
 			.references(() => user.id, { onDelete: 'cascade' }),
@@ -82,39 +77,28 @@ export const account = createTable(
 		createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 		updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
 	},
-	(table) => [
-		primaryKey({
-			columns: [table.providerId, table.accountId]
-		}),
-		index('account_user_id_idx').on(table.userId)
-	]
+	(table) => [index('account_user_id_idx').on(table.userId)]
 );
 
 export const accountRelations = relations(account, ({ one }) => ({
 	user: one(user, { fields: [account.userId], references: [user.id] })
 }));
 
-export const verification = createTable(
-	'verification',
-	{
-		identifier: text('identifier', { length: 255 }).notNull(),
-		value: text('value', { length: 255 }).notNull(),
-		expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
-		createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(
-			() => /* @__PURE__ */ new Date()
-		),
-		updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(
-			() => /* @__PURE__ */ new Date()
-		)
-	},
-	(table) => [primaryKey({ columns: [table.identifier, table.value] })]
-);
+export const verification = createTable('verification', {
+	id: text('id').primaryKey(),
+	identifier: text('identifier', { length: 255 }).notNull(),
+	value: text('value', { length: 255 }).notNull(),
+	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+	createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(
+		() => /* @__PURE__ */ new Date()
+	),
+	updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(
+		() => /* @__PURE__ */ new Date()
+	)
+});
 
 export const chat = createTable('chat', {
-	id: text('id', { length: 255 })
-		.notNull()
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
+	id: text('id').primaryKey(),
 	userId: text('user_id', { length: 255 })
 		.notNull()
 		.references(() => user.id, { onDelete: 'cascade' }),
@@ -133,10 +117,7 @@ export const chatRelations = relations(chat, ({ one, many }) => ({
 }));
 
 export const message = createTable('message', {
-	id: text('id', { length: 255 })
-		.notNull()
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
+	id: text('id').primaryKey(),
 	chatId: text('chat_id', { length: 255 })
 		.notNull()
 		.references(() => chat.id, { onDelete: 'cascade' }),
