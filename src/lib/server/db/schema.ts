@@ -18,7 +18,7 @@ import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 export const createTable = sqliteTableCreator((name) => `ai-app-template_${name}`);
 
 export const user = createTable('user', {
-	id: integer('id').primaryKey(),
+	id: text('id').primaryKey(),
 	name: text('name').notNull(),
 	email: text('email').notNull().unique(),
 	emailVerified: integer('email_verified', { mode: 'boolean' })
@@ -43,14 +43,14 @@ export const userRelations = relations(user, ({ many }) => ({
 export const session = createTable(
 	'session',
 	{
-		id: integer('id').primaryKey(),
+		id: text('id').primaryKey(),
 		expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
 		token: text('token').notNull().unique(),
 		createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 		updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 		ipAddress: text('ip_address'),
 		userAgent: text('user_agent'),
-		userId: integer('user_id')
+		userId: text('user_id')
 			.notNull()
 			.references(() => user.id, { onDelete: 'cascade' })
 	},
@@ -67,10 +67,10 @@ export const sessionRelations = relations(session, ({ one }) => ({
 export const account = createTable(
 	'account',
 	{
-		id: integer('id').primaryKey(),
+		id: text('id').primaryKey(),
 		accountId: text('account_id').notNull(),
 		providerId: text('provider_id').notNull(),
-		userId: integer('user_id')
+		userId: text('user_id')
 			.notNull()
 			.references(() => user.id, { onDelete: 'cascade' }),
 		accessToken: text('access_token'),
@@ -100,7 +100,7 @@ export const accountRelations = relations(account, ({ one }) => ({
 export const verification = createTable(
 	'verification',
 	{
-		id: integer('id').primaryKey(),
+		id: text('id').primaryKey(),
 		identifier: text('identifier').notNull(),
 		value: text('value').notNull(),
 		expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
@@ -117,8 +117,8 @@ export const verification = createTable(
 export const chat = createTable(
 	'chat',
 	{
-		id: integer('id').primaryKey(),
-		userId: integer('user_id')
+		id: text('id').primaryKey(),
+		userId: text('user_id')
 			.notNull()
 			.references(() => user.id, { onDelete: 'cascade' }),
 		title: text('title').notNull(),
@@ -140,8 +140,8 @@ export const chatRelations = relations(chat, ({ one, many }) => ({
 export const message = createTable(
 	'message',
 	{
-		id: integer('id').primaryKey(),
-		chatId: integer('chat_id')
+		id: text('id').primaryKey(),
+		chatId: text('chat_id')
 			.notNull()
 			.references(() => chat.id, { onDelete: 'cascade' }),
 		role: text('role').notNull(), // 'user', 'assistant', 'system'
