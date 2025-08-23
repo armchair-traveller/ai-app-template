@@ -1,7 +1,17 @@
-import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core';
+import { integer, text, sqliteTableCreator } from 'drizzle-orm/sqlite-core';
+import { relations } from 'drizzle-orm';
+import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
+
+/**
+ * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
+ * database instance for multiple projects.
+ *
+ * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
+ */
+export const createTable = sqliteTableCreator((name) => `ai-app-template_${name}`);
 
 // Better Auth tables
-export const user = sqliteTable('user', {
+export const user = createTable('user', {
 	id: text('id').primaryKey(),
 	name: text('name').notNull(),
 	email: text('email').notNull().unique(),
@@ -9,6 +19,9 @@ export const user = sqliteTable('user', {
 		.$defaultFn(() => false)
 		.notNull(),
 	image: text('image'),
+	isAdmin: integer('is_admin', { mode: 'boolean' })
+		.notNull()
+		.$defaultFn(() => false),
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.$defaultFn(() => new Date())
 		.notNull(),
@@ -17,7 +30,7 @@ export const user = sqliteTable('user', {
 		.notNull()
 });
 
-export const session = sqliteTable('session', {
+export const session = createTable('session', {
 	id: text('id').primaryKey(),
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
 	token: text('token').notNull().unique(),
@@ -30,7 +43,7 @@ export const session = sqliteTable('session', {
 		.references(() => user.id, { onDelete: 'cascade' })
 });
 
-export const account = sqliteTable('account', {
+export const account = createTable('account', {
 	id: text('id').primaryKey(),
 	accountId: text('account_id').notNull(),
 	providerId: text('provider_id').notNull(),
@@ -52,7 +65,7 @@ export const account = sqliteTable('account', {
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
 });
 
-export const verification = sqliteTable('verification', {
+export const verification = createTable('verification', {
 	id: text('id').primaryKey(),
 	identifier: text('identifier').notNull(),
 	value: text('value').notNull(),
@@ -62,7 +75,66 @@ export const verification = sqliteTable('verification', {
 });
 
 // Your existing tables can go here
-// export const yourTable = sqliteTable('your_table', {
-//   id: integer('id').primaryKey(),
-//   // ... other fields
-// });
+export const chat = createTable('chat', {
+	id: text('id').primaryKey(),
+	userId: text('user_id')
+		.notNull()
+		.references(() => user.id, { onDelete: 'cascade' }),
+	title: text('title').notNull(),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.$defaultFn(() => new Date())
+		.notNull(),
+	updatedAt: integer('updated_at', { mode: 'timestamp' })
+		.$defaultFn(() => new Date())
+		.notNull()
+});
+
+export const message = createTable('message', {
+	id: text('id').primaryKey(),
+	chatId: text('chat_id')
+		.notNull()
+		.references(() => chat.id, { onDelete: 'cascade' }),
+	role: text('role').notNull(), // 'user', 'assistant', 'system'
+	parts: text('parts', { mode: 'json' }).notNull(),
+	order: integer('order').notNull(),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.$defaultFn(() => new Date())
+		.notNull()
+});
+
+// Relations
+export const userRelations = relations(user, ({ many }) => ({
+	chats: many(chat),
+	accounts: many(account),
+	sessions: many(session)
+}));
+
+export const chatRelations = relations(chat, ({ one, many }) => ({
+	user: one(user, { fields: [chat.userId], references: [user.id] }),
+	messages: many(message)
+}));
+
+export const messageRelations = relations(message, ({ one }) => ({
+	chat: one(chat, { fields: [message.chatId], references: [chat.id] })
+}));
+
+// Type exports
+export declare namespace DB {
+	export type User = InferSelectModel<typeof user>;
+	export type NewUser = InferInsertModel<typeof user>;
+
+	export type Account = InferSelectModel<typeof account>;
+	export type NewAccount = InferInsertModel<typeof account>;
+
+	export type Session = InferSelectModel<typeof session>;
+	export type NewSession = InferInsertModel<typeof session>;
+
+	export type Verification = InferSelectModel<typeof verification>;
+	export type NewVerification = InferInsertModel<typeof verification>;
+
+	export type Chat = InferSelectModel<typeof chat>;
+	export type NewChat = InferInsertModel<typeof chat>;
+
+	export type Message = InferSelectModel<typeof message>;
+	export type NewMessage = InferInsertModel<typeof message>;
+}
