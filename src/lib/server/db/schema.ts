@@ -53,10 +53,7 @@ export const session = createTable(
 			.notNull()
 			.references(() => user.id, { onDelete: 'cascade' })
 	},
-	(table) => [
-		index('session_user_id_idx').on(table.userId),
-		index('session_token_idx').on(table.token)
-	]
+	(table) => [index('session_user_id_idx').on(table.userId)]
 );
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -139,28 +136,21 @@ export const chatRelations = relations(chat, ({ one, many }) => ({
 	messages: many(message)
 }));
 
-export const message = createTable(
-	'message',
-	{
-		id: text('id', { length: 255 })
-			.notNull()
-			.primaryKey()
-			.$defaultFn(() => crypto.randomUUID()),
-		chatId: text('chat_id', { length: 255 })
-			.notNull()
-			.references(() => chat.id, { onDelete: 'cascade' }),
-		role: text('role', { length: 255 }).notNull(), // 'user', 'assistant', 'system'
-		parts: text('parts', { mode: 'json' }).notNull(),
-		order: integer('order').notNull(),
-		createdAt: integer('created_at', { mode: 'timestamp' })
-			.$defaultFn(() => /* @__PURE__ */ new Date())
-			.notNull()
-	},
-	(table) => [
-		index('message_chat_id_idx').on(table.chatId),
-		index('message_chat_order_idx').on(table.chatId, table.order)
-	]
-);
+export const message = createTable('message', {
+	id: text('id', { length: 255 })
+		.notNull()
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	chatId: text('chat_id', { length: 255 })
+		.notNull()
+		.references(() => chat.id, { onDelete: 'cascade' }),
+	role: text('role', { length: 255 }).notNull(), // 'user', 'assistant', 'system'
+	parts: text('parts', { mode: 'json' }).notNull(),
+	order: integer('order').notNull(),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.$defaultFn(() => /* @__PURE__ */ new Date())
+		.notNull()
+});
 
 export const messageRelations = relations(message, ({ one }) => ({
 	chat: one(chat, { fields: [message.chatId], references: [chat.id] })
