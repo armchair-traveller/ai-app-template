@@ -10,7 +10,6 @@ import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
  */
 export const createTable = sqliteTableCreator((name) => `ai-app-template_${name}`);
 
-// Better Auth tables
 export const user = createTable('user', {
 	id: text('id').primaryKey(),
 	name: text('name').notNull(),
@@ -30,6 +29,11 @@ export const user = createTable('user', {
 		.notNull()
 });
 
+export const userRelations = relations(user, ({ many }) => ({
+	accounts: many(account),
+	chats: many(chat)
+}));
+
 export const session = createTable('session', {
 	id: text('id').primaryKey(),
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
@@ -42,6 +46,10 @@ export const session = createTable('session', {
 		.notNull()
 		.references(() => user.id, { onDelete: 'cascade' })
 });
+
+export const sessionRelations = relations(session, ({ one }) => ({
+	user: one(user, { fields: [session.userId], references: [user.id] })
+}));
 
 export const account = createTable('account', {
 	id: text('id').primaryKey(),
@@ -65,6 +73,10 @@ export const account = createTable('account', {
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
 });
 
+export const accountRelations = relations(account, ({ one }) => ({
+	user: one(user, { fields: [account.userId], references: [user.id] })
+}));
+
 export const verification = createTable('verification', {
 	id: text('id').primaryKey(),
 	identifier: text('identifier').notNull(),
@@ -74,7 +86,6 @@ export const verification = createTable('verification', {
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date())
 });
 
-// Your existing tables can go here
 export const chat = createTable('chat', {
 	id: text('id').primaryKey(),
 	userId: text('user_id')
@@ -89,6 +100,11 @@ export const chat = createTable('chat', {
 		.notNull()
 });
 
+export const chatRelations = relations(chat, ({ one, many }) => ({
+	user: one(user, { fields: [chat.userId], references: [user.id] }),
+	messages: many(message)
+}));
+
 export const message = createTable('message', {
 	id: text('id').primaryKey(),
 	chatId: text('chat_id')
@@ -102,23 +118,10 @@ export const message = createTable('message', {
 		.notNull()
 });
 
-// Relations
-export const userRelations = relations(user, ({ many }) => ({
-	chats: many(chat),
-	accounts: many(account),
-	sessions: many(session)
-}));
-
-export const chatRelations = relations(chat, ({ one, many }) => ({
-	user: one(user, { fields: [chat.userId], references: [user.id] }),
-	messages: many(message)
-}));
-
 export const messageRelations = relations(message, ({ one }) => ({
 	chat: one(chat, { fields: [message.chatId], references: [chat.id] })
 }));
 
-// Type exports
 export declare namespace DB {
 	export type User = InferSelectModel<typeof user>;
 	export type NewUser = InferInsertModel<typeof user>;
