@@ -1,5 +1,4 @@
-import { integer, text, sqliteTableCreator } from 'drizzle-orm/sqlite-core';
-import { relations } from 'drizzle-orm';
+import { sqliteTableCreator, text, integer } from 'drizzle-orm/sqlite-core';
 import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 
 /**
@@ -19,20 +18,15 @@ export const user = createTable('user', {
 		.notNull(),
 	image: text('image'),
 	isAdmin: integer('is_admin', { mode: 'boolean' })
-		.notNull()
-		.$defaultFn(() => false),
+		.$defaultFn(() => false)
+		.notNull(),
 	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
+		.$defaultFn(() => /* @__PURE__ */ new Date())
 		.notNull(),
 	updatedAt: integer('updated_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
+		.$defaultFn(() => /* @__PURE__ */ new Date())
 		.notNull()
 });
-
-export const userRelations = relations(user, ({ many }) => ({
-	accounts: many(account),
-	chats: many(chat)
-}));
 
 export const session = createTable('session', {
 	id: text('id').primaryKey(),
@@ -46,10 +40,6 @@ export const session = createTable('session', {
 		.notNull()
 		.references(() => user.id, { onDelete: 'cascade' })
 });
-
-export const sessionRelations = relations(session, ({ one }) => ({
-	user: one(user, { fields: [session.userId], references: [user.id] })
-}));
 
 export const account = createTable('account', {
 	id: text('id').primaryKey(),
@@ -73,17 +63,17 @@ export const account = createTable('account', {
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
 });
 
-export const accountRelations = relations(account, ({ one }) => ({
-	user: one(user, { fields: [account.userId], references: [user.id] })
-}));
-
 export const verification = createTable('verification', {
 	id: text('id').primaryKey(),
 	identifier: text('identifier').notNull(),
 	value: text('value').notNull(),
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
-	createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
-	updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date())
+	createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(
+		() => /* @__PURE__ */ new Date()
+	),
+	updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(
+		() => /* @__PURE__ */ new Date()
+	)
 });
 
 export const chat = createTable('chat', {
@@ -93,17 +83,12 @@ export const chat = createTable('chat', {
 		.references(() => user.id, { onDelete: 'cascade' }),
 	title: text('title').notNull(),
 	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
+		.$defaultFn(() => /* @__PURE__ */ new Date())
 		.notNull(),
 	updatedAt: integer('updated_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
+		.$defaultFn(() => /* @__PURE__ */ new Date())
 		.notNull()
 });
-
-export const chatRelations = relations(chat, ({ one, many }) => ({
-	user: one(user, { fields: [chat.userId], references: [user.id] }),
-	messages: many(message)
-}));
 
 export const message = createTable('message', {
 	id: text('id').primaryKey(),
@@ -114,13 +99,9 @@ export const message = createTable('message', {
 	parts: text('parts', { mode: 'json' }).notNull(),
 	order: integer('order').notNull(),
 	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
+		.$defaultFn(() => /* @__PURE__ */ new Date())
 		.notNull()
 });
-
-export const messageRelations = relations(message, ({ one }) => ({
-	chat: one(chat, { fields: [message.chatId], references: [chat.id] })
-}));
 
 export declare namespace DB {
 	export type User = InferSelectModel<typeof user>;
