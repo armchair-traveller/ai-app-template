@@ -110,26 +110,22 @@ export const verification = createTable(
 	(table) => [primaryKey({ columns: [table.identifier, table.value] })]
 );
 
-export const chat = createTable(
-	'chat',
-	{
-		id: text('id', { length: 255 })
-			.notNull()
-			.primaryKey()
-			.$defaultFn(() => crypto.randomUUID()),
-		userId: text('user_id', { length: 255 })
-			.notNull()
-			.references(() => user.id, { onDelete: 'cascade' }),
-		title: text('title', { length: 255 }).notNull(),
-		createdAt: integer('created_at', { mode: 'timestamp' })
-			.$defaultFn(() => /* @__PURE__ */ new Date())
-			.notNull(),
-		updatedAt: integer('updated_at', { mode: 'timestamp' })
-			.$defaultFn(() => /* @__PURE__ */ new Date())
-			.notNull()
-	},
-	(table) => [index('chat_user_id_idx').on(table.userId)]
-);
+export const chat = createTable('chat', {
+	id: text('id', { length: 255 })
+		.notNull()
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	userId: text('user_id', { length: 255 })
+		.notNull()
+		.references(() => user.id, { onDelete: 'cascade' }),
+	title: text('title', { length: 255 }).notNull(),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.$defaultFn(() => /* @__PURE__ */ new Date())
+		.notNull(),
+	updatedAt: integer('updated_at', { mode: 'timestamp' })
+		.$defaultFn(() => /* @__PURE__ */ new Date())
+		.notNull()
+});
 
 export const chatRelations = relations(chat, ({ one, many }) => ({
 	user: one(user, { fields: [chat.userId], references: [user.id] }),
