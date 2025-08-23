@@ -1,4 +1,5 @@
 import { sqliteTableCreator, text, integer } from 'drizzle-orm/sqlite-core';
+import { relations } from 'drizzle-orm';
 import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 
 /**
@@ -28,6 +29,10 @@ export const user = createTable('user', {
 		.notNull()
 });
 
+export const userRelations = relations(user, ({ many }) => ({
+	accounts: many(account)
+}));
+
 export const session = createTable('session', {
 	id: text('id').primaryKey(),
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
@@ -40,6 +45,10 @@ export const session = createTable('session', {
 		.notNull()
 		.references(() => user.id, { onDelete: 'cascade' })
 });
+
+export const sessionRelations = relations(session, ({ one }) => ({
+	user: one(user, { fields: [session.userId], references: [user.id] })
+}));
 
 export const account = createTable('account', {
 	id: text('id').primaryKey(),
@@ -62,6 +71,10 @@ export const account = createTable('account', {
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
 });
+
+export const accountRelations = relations(account, ({ one }) => ({
+	user: one(user, { fields: [account.userId], references: [user.id] })
+}));
 
 export const verification = createTable('verification', {
 	id: text('id').primaryKey(),
@@ -90,6 +103,11 @@ export const chat = createTable('chat', {
 		.notNull()
 });
 
+export const chatRelations = relations(chat, ({ one, many }) => ({
+	user: one(user, { fields: [chat.userId], references: [user.id] }),
+	messages: many(message)
+}));
+
 export const message = createTable('message', {
 	id: text('id').primaryKey(),
 	chatId: text('chat_id')
@@ -102,6 +120,10 @@ export const message = createTable('message', {
 		.$defaultFn(() => /* @__PURE__ */ new Date())
 		.notNull()
 });
+
+export const messageRelations = relations(message, ({ one }) => ({
+	chat: one(chat, { fields: [message.chatId], references: [chat.id] })
+}));
 
 export declare namespace DB {
 	export type User = InferSelectModel<typeof user>;
