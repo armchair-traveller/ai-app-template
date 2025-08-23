@@ -54,10 +54,10 @@ export const session = createTable(
 			.notNull()
 			.references(() => user.id, { onDelete: 'cascade' })
 	},
-	(table) => ({
-		userIdIdx: index('session_user_id_idx').on(table.userId),
-		tokenIdx: index('session_token_idx').on(table.token)
-	})
+	(table) => [
+		index('session_user_id_idx').on(table.userId),
+		index('session_token_idx').on(table.token)
+	]
 );
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -87,10 +87,10 @@ export const account = createTable(
 		createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 		updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
 	},
-	(table) => ({
-		userIdIdx: index('account_user_id_idx').on(table.userId),
-		providerCompound: unique('account_provider_compound').on(table.providerId, table.accountId)
-	})
+	(table) => [
+		index('account_user_id_idx').on(table.userId),
+		unique('account_provider_compound').on(table.providerId, table.accountId)
+	]
 );
 
 export const accountRelations = relations(account, ({ one }) => ({
@@ -111,9 +111,7 @@ export const verification = createTable(
 			() => /* @__PURE__ */ new Date()
 		)
 	},
-	(table) => ({
-		compoundKey: primaryKey({ columns: [table.identifier, table.value] })
-	})
+	(table) => [primaryKey({ columns: [table.identifier, table.value] })]
 );
 
 export const chat = createTable(
@@ -131,9 +129,7 @@ export const chat = createTable(
 			.$defaultFn(() => /* @__PURE__ */ new Date())
 			.notNull()
 	},
-	(table) => ({
-		userIdIdx: index('chat_user_id_idx').on(table.userId)
-	})
+	(table) => [index('chat_user_id_idx').on(table.userId)]
 );
 
 export const chatRelations = relations(chat, ({ one, many }) => ({
@@ -155,10 +151,10 @@ export const message = createTable(
 			.$defaultFn(() => /* @__PURE__ */ new Date())
 			.notNull()
 	},
-	(table) => ({
-		chatIdIdx: index('message_chat_id_idx').on(table.chatId),
-		chatOrderIdx: index('message_chat_order_idx').on(table.chatId, table.order)
-	})
+	(table) => [
+		index('message_chat_id_idx').on(table.chatId),
+		index('message_chat_order_idx').on(table.chatId, table.order)
+	]
 );
 
 export const messageRelations = relations(message, ({ one }) => ({
