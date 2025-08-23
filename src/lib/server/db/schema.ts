@@ -1,4 +1,11 @@
-import { sqliteTableCreator, text, integer } from 'drizzle-orm/sqlite-core';
+import {
+	sqliteTableCreator,
+	text,
+	integer,
+	index,
+	unique,
+	primaryKey
+} from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 
@@ -33,93 +40,126 @@ export const userRelations = relations(user, ({ many }) => ({
 	accounts: many(account)
 }));
 
-export const session = createTable('session', {
-	id: text('id').primaryKey(),
-	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
-	token: text('token').notNull().unique(),
-	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
-	ipAddress: text('ip_address'),
-	userAgent: text('user_agent'),
-	userId: text('user_id')
-		.notNull()
-		.references(() => user.id, { onDelete: 'cascade' })
-});
+export const session = createTable(
+	'session',
+	{
+		id: text('id').primaryKey(),
+		expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+		token: text('token').notNull().unique(),
+		createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+		updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+		ipAddress: text('ip_address'),
+		userAgent: text('user_agent'),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' })
+	},
+	(table) => ({
+		userIdIdx: index('session_user_id_idx').on(table.userId),
+		tokenIdx: index('session_token_idx').on(table.token)
+	})
+);
 
 export const sessionRelations = relations(session, ({ one }) => ({
 	user: one(user, { fields: [session.userId], references: [user.id] })
 }));
 
-export const account = createTable('account', {
-	id: text('id').primaryKey(),
-	accountId: text('account_id').notNull(),
-	providerId: text('provider_id').notNull(),
-	userId: text('user_id')
-		.notNull()
-		.references(() => user.id, { onDelete: 'cascade' }),
-	accessToken: text('access_token'),
-	refreshToken: text('refresh_token'),
-	idToken: text('id_token'),
-	accessTokenExpiresAt: integer('access_token_expires_at', {
-		mode: 'timestamp'
-	}),
-	refreshTokenExpiresAt: integer('refresh_token_expires_at', {
-		mode: 'timestamp'
-	}),
-	scope: text('scope'),
-	password: text('password'),
-	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
-});
+export const account = createTable(
+	'account',
+	{
+		id: text('id').primaryKey(),
+		accountId: text('account_id').notNull(),
+		providerId: text('provider_id').notNull(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		accessToken: text('access_token'),
+		refreshToken: text('refresh_token'),
+		idToken: text('id_token'),
+		accessTokenExpiresAt: integer('access_token_expires_at', {
+			mode: 'timestamp'
+		}),
+		refreshTokenExpiresAt: integer('refresh_token_expires_at', {
+			mode: 'timestamp'
+		}),
+		scope: text('scope'),
+		password: text('password'),
+		createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+		updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
+	},
+	(table) => ({
+		userIdIdx: index('account_user_id_idx').on(table.userId),
+		providerCompound: unique('account_provider_compound').on(table.providerId, table.accountId)
+	})
+);
 
 export const accountRelations = relations(account, ({ one }) => ({
 	user: one(user, { fields: [account.userId], references: [user.id] })
 }));
 
-export const verification = createTable('verification', {
-	id: text('id').primaryKey(),
-	identifier: text('identifier').notNull(),
-	value: text('value').notNull(),
-	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
-	createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(
-		() => /* @__PURE__ */ new Date()
-	),
-	updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(
-		() => /* @__PURE__ */ new Date()
-	)
-});
+export const verification = createTable(
+	'verification',
+	{
+		id: text('id').primaryKey(),
+		identifier: text('identifier').notNull(),
+		value: text('value').notNull(),
+		expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+		createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(
+			() => /* @__PURE__ */ new Date()
+		),
+		updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(
+			() => /* @__PURE__ */ new Date()
+		)
+	},
+	(table) => ({
+		compoundKey: primaryKey({ columns: [table.identifier, table.value] })
+	})
+);
 
-export const chat = createTable('chat', {
-	id: text('id').primaryKey(),
-	userId: text('user_id')
-		.notNull()
-		.references(() => user.id, { onDelete: 'cascade' }),
-	title: text('title').notNull(),
-	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => /* @__PURE__ */ new Date())
-		.notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' })
-		.$defaultFn(() => /* @__PURE__ */ new Date())
-		.notNull()
-});
+export const chat = createTable(
+	'chat',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		title: text('title').notNull(),
+		createdAt: integer('created_at', { mode: 'timestamp' })
+			.$defaultFn(() => /* @__PURE__ */ new Date())
+			.notNull(),
+		updatedAt: integer('updated_at', { mode: 'timestamp' })
+			.$defaultFn(() => /* @__PURE__ */ new Date())
+			.notNull()
+	},
+	(table) => ({
+		userIdIdx: index('chat_user_id_idx').on(table.userId)
+	})
+);
 
 export const chatRelations = relations(chat, ({ one, many }) => ({
 	user: one(user, { fields: [chat.userId], references: [user.id] }),
 	messages: many(message)
 }));
 
-export const message = createTable('message', {
-	id: text('id').primaryKey(),
-	chatId: text('chat_id')
-		.notNull()
-		.references(() => chat.id, { onDelete: 'cascade' }),
-	role: text('role').notNull(), // 'user', 'assistant', 'system'
-	parts: text('parts', { mode: 'json' }).notNull(),
-	order: integer('order').notNull(),
-	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => /* @__PURE__ */ new Date())
-		.notNull()
-});
+export const message = createTable(
+	'message',
+	{
+		id: text('id').primaryKey(),
+		chatId: text('chat_id')
+			.notNull()
+			.references(() => chat.id, { onDelete: 'cascade' }),
+		role: text('role').notNull(), // 'user', 'assistant', 'system'
+		parts: text('parts', { mode: 'json' }).notNull(),
+		order: integer('order').notNull(),
+		createdAt: integer('created_at', { mode: 'timestamp' })
+			.$defaultFn(() => /* @__PURE__ */ new Date())
+			.notNull()
+	},
+	(table) => ({
+		chatIdIdx: index('message_chat_id_idx').on(table.chatId),
+		chatOrderIdx: index('message_chat_order_idx').on(table.chatId, table.order)
+	})
+);
 
 export const messageRelations = relations(message, ({ one }) => ({
 	chat: one(chat, { fields: [message.chatId], references: [chat.id] })
