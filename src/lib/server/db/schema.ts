@@ -1,4 +1,4 @@
-import { sqliteTableCreator, text, integer, index, unique } from 'drizzle-orm/sqlite-core';
+import { sqliteTableCreator, text, integer, index, primaryKey } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 
@@ -66,15 +66,11 @@ export const sessionRelations = relations(session, ({ one }) => ({
 export const account = createTable(
 	'account',
 	{
-		id: text('id', { length: 255 })
-			.notNull()
-			.primaryKey()
-			.$defaultFn(() => crypto.randomUUID()),
-		accountId: text('account_id', { length: 255 }).notNull(),
-		providerId: text('provider_id', { length: 255 }).notNull(),
 		userId: text('user_id', { length: 255 })
 			.notNull()
 			.references(() => user.id, { onDelete: 'cascade' }),
+		accountId: text('account_id', { length: 255 }).notNull(),
+		providerId: text('provider_id', { length: 255 }).notNull(),
 		accessToken: text('access_token'),
 		refreshToken: text('refresh_token'),
 		idToken: text('id_token'),
@@ -90,8 +86,10 @@ export const account = createTable(
 		updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
 	},
 	(table) => [
-		index('account_user_id_idx').on(table.userId),
-		unique('account_provider_compound').on(table.providerId, table.accountId)
+		primaryKey({
+			columns: [table.providerId, table.accountId]
+		}),
+		index('account_user_id_idx').on(table.userId)
 	]
 );
 
@@ -102,10 +100,6 @@ export const accountRelations = relations(account, ({ one }) => ({
 export const verification = createTable(
 	'verification',
 	{
-		id: text('id', { length: 255 })
-			.notNull()
-			.primaryKey()
-			.$defaultFn(() => crypto.randomUUID()),
 		identifier: text('identifier', { length: 255 }).notNull(),
 		value: text('value', { length: 255 }).notNull(),
 		expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
@@ -116,7 +110,7 @@ export const verification = createTable(
 			() => /* @__PURE__ */ new Date()
 		)
 	},
-	(table) => [unique().on(table.identifier, table.value)]
+	(table) => [primaryKey({ columns: [table.identifier, table.value] })]
 );
 
 export const chat = createTable(
