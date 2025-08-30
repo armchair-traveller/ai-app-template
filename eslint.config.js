@@ -1,6 +1,7 @@
 import prettier from 'eslint-config-prettier';
 import { includeIgnoreFile } from '@eslint/compat';
 import js from '@eslint/js';
+import drizzle from 'eslint-plugin-drizzle';
 import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
 import { fileURLToPath } from 'node:url';
@@ -26,6 +27,7 @@ export default ts.config(
 			'no-undef': 'off'
 		}
 	},
+	{ plugins: { drizzle }, rules: drizzle.configs.recommended.rules },
 	{
 		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
 		languageOptions: {
