@@ -9,6 +9,7 @@ export default defineConfig({
 		authToken: process.env.DATABASE_AUTH_TOKEN,
 		url: process.env.DATABASE_URL
 	},
+	tablesFilter: ['ai-app-template_*'],
 	verbose: true,
 	strict: true
 });
