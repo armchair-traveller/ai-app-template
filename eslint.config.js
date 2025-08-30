@@ -27,7 +27,13 @@ export default ts.config(
 			'no-undef': 'off'
 		}
 	},
-	{ plugins: { drizzle }, rules: drizzle.configs.recommended.rules },
+	{
+		plugins: { drizzle },
+		rules: {
+			'drizzle/enforce-delete-with-where': ['error', { drizzleObjectName: ['db', 'ctx.db'] }],
+			'drizzle/enforce-update-with-where': ['error', { drizzleObjectName: ['db', 'ctx.db'] }]
+		}
+	},
 	{
 		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
 		languageOptions: {
