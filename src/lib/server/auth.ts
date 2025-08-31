@@ -8,7 +8,7 @@ import {
 	DISCORD_CLIENT_ID,
 	DISCORD_CLIENT_SECRET
 } from '$env/static/private';
-import { db } from './server/db';
+import { db } from './db';
 
 /**
  * Options for Better Auth used to configure adapters, providers, plugins, etc.
