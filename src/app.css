@@ -4,4 +4,5 @@
 
 @theme {
 	--font-sans: var(--font-geist-sans), sans-serif, system-ui;
+	/* For custom typography plugin color themes see: https://github.com/tailwindlabs/tailwindcss-typography?tab=readme-ov-file#adding-custom-color-themes */
 }
