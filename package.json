@@ -67,6 +67,7 @@
 	"dependencies": {
 		"@fontsource-variable/geist": "^5.2.6",
 		"@libsql/client": "^0.14.0",
+		"@unpic/svelte": "^1.0.0",
 		"drizzle-orm": "^0.40.0",
 		"rehype-stringify": "^10.0.1",
 		"remark": "^15.0.1",
