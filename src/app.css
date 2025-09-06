@@ -3,7 +3,7 @@
 @plugin 'tailwind-scrollbar';
 
 @theme inline {
-	--font-geist-sans: 'Geist';
+	--font-geist-sans: 'Geist Variable';
 }
 
 @theme {

@@ -1,10 +1,20 @@
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import Icons from 'unplugin-icons/vite';
+import Unfonts from 'unplugin-fonts/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-	plugins: [tailwindcss(), sveltekit(), Icons({ compiler: 'svelte' })],
+	plugins: [
+		tailwindcss(),
+		sveltekit(),
+		Icons({ compiler: 'svelte' }),
+		Unfonts({
+			fontsource: {
+				families: ['Geist Variable']
+			}
+		})
+	],
 	test: {
 		expect: { requireAssertions: true },
 		projects: [
