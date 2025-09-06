@@ -5,6 +5,8 @@
 
 Optional implementations not included as not part of the main branch
 
+- [ ] @upstash/ratelimit for rate limiting
+
 # sv
 
 Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
