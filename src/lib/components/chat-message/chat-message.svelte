@@ -96,7 +96,7 @@
 	const isAI = role === 'assistant';
 
 	// Find the latest USAGE annotation (if any)
-	const usagePart = $derived(isAI ? parts.findLast((a) => a.type === 'data-usage') : undefined);
+	const usagePart = $derived(isAI ? parts.findLast((a) => a.type === 'data-usage') : null);
 </script>
 
 {#snippet sources(sources: Source[])}
