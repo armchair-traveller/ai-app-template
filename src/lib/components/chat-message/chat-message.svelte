@@ -93,13 +93,10 @@
 
 	let { parts, role, userName }: Props = $props();
 
-	const isAI = $derived(role === 'assistant');
+	const isAI = role === 'assistant';
 
 	// Find the latest USAGE annotation (if any)
 	const usagePart = $derived(isAI ? parts.findLast((a) => a.type === 'data-usage') : undefined);
-
-	// Get text parts for main content
-	const textParts = $derived(parts.filter((part) => part.type === 'text'));
 </script>
 
 {#snippet sources(sources: Source[])}
@@ -133,14 +130,6 @@
 	{@html html}
 {/snippet}
 
-{#snippet usageInfo()}
-	{#if isAI && usagePart}
-		<div class="mb-2 text-xs text-gray-400">
-			Tokens used: {usagePart.data.totalTokens}
-		</div>
-	{/if}
-{/snippet}
-
 <div class="mb-6">
 	<div class="rounded-lg p-4 {isAI ? 'bg-gray-800 text-gray-300' : 'bg-gray-900 text-gray-300'}">
 		<p class="mb-2 text-sm font-semibold text-gray-400">
@@ -151,10 +140,14 @@
 			<ReasoningSteps {parts} />
 		{/if}
 
-		{@render usageInfo()}
+		{#if isAI && usagePart}
+			<div class="mb-2 text-xs text-gray-400">
+				Tokens used: {usagePart.data.totalTokens}
+			</div>
+		{/if}
 
 		<div class="prose max-w-none prose-invert">
-			{#each textParts as part, partIndex (partIndex)}
+			{#each parts.filter((part) => part.type === 'text') as part, partIndex (partIndex)}
 				{@render markdown(part.text)}
 			{/each}
 		</div>
