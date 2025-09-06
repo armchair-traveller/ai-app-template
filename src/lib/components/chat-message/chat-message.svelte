@@ -36,7 +36,7 @@
 						children: state.all(node)
 					};
 				},
-				inlineCode: (state, node) => {
+				inlineCode: (_state, node) => {
 					return {
 						type: 'element',
 						tagName: 'code',
@@ -44,7 +44,7 @@
 						children: [{ type: 'text', value: node.value }]
 					};
 				},
-				code: (state, node) => {
+				code: (_state, node) => {
 					return {
 						type: 'element',
 						tagName: 'pre',
