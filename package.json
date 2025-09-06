@@ -44,6 +44,7 @@
 		"evalite": "^0.11.5",
 		"geist": "^1.4.2",
 		"globals": "^16.0.0",
+		"langfuse": "^3.38.5",
 		"langfuse-vercel": "^3.38.5",
 		"prettier": "^3.4.2",
 		"prettier-plugin-svelte": "^3.3.3",

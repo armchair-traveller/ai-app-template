@@ -87,6 +87,9 @@ importers:
       globals:
         specifier: ^16.0.0
         version: 16.3.0
+      langfuse:
+        specifier: ^3.38.5
+        version: 3.38.5
       langfuse-vercel:
         specifier: ^3.38.5
         version: 3.38.5(ai@5.0.22(zod@4.1.0))
