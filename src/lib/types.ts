@@ -1,7 +1,7 @@
 import type { UIMessage } from 'ai';
 import type { Action } from './get-next-action';
 
-type Source = {
+export type Source = {
 	title: string;
 	url: string;
 	snippet: string;

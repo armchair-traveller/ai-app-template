@@ -13,4 +13,8 @@ declare global {
 	}
 }
 
+// Refer to https://icones.js.org/ for list of icons
+import type * as Icons from 'unplugin-icons/types/svelte';
+export default Icons;
+
 export {};
