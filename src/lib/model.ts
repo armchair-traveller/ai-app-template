@@ -1,4 +1,7 @@
-import { openai } from '@ai-sdk/openai';
+import { createOpenAI } from '@ai-sdk/openai';
+import { OPENAI_API_KEY } from '$env/static/private';
+
+const openai = createOpenAI({ apiKey: OPENAI_API_KEY });
 
 export const model = openai('gpt-5');
 export const factualityModel = openai('gpt-5-nano');
