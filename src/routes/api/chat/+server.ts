@@ -16,11 +16,8 @@ const langfuse = new Langfuse({
 
 export const _maxDuration = 60;
 
-export async function POST({ request, locals }) {
-	const { session, user } = locals;
-	if (!session || !user) {
-		return new Response('Unauthorized', { status: 401 });
-	}
+export async function POST({ request, locals: { user } }) {
+	if (!user) return new Response('Unauthorized', { status: 401 });
 
 	const body = (await request.json()) as {
 		messages: Array<UIMessage>;

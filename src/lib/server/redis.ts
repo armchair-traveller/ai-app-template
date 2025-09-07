@@ -1,6 +1,10 @@
+import { UPSTASH_REDIS_REST_TOKEN, UPSTASH_REDIS_REST_URL } from '$env/static/private';
 import { Redis } from '@upstash/redis';
 
-export const redis = Redis.fromEnv();
+export const redis = new Redis({
+	url: UPSTASH_REDIS_REST_URL,
+	token: UPSTASH_REDIS_REST_TOKEN
+});
 
 const CACHE_EXPIRY_SECONDS = 60 * 60 * 6; // 6 hours
 const CACHE_KEY_SEPARATOR = ':';

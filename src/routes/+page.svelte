@@ -5,7 +5,8 @@
 	import ChatPage from '$lib/components/chat.svelte';
 	import AuthButton from '$lib/components/auth-button.svelte';
 	import type { OurMessage } from '$lib/types';
-	import { getChats, getChat } from '$lib/server/db/queries';
+
+	let { data } = $props();
 
 	const session = authClient.useSession();
 	const userName = $derived($session.data?.user?.name ?? 'Guest');
@@ -13,23 +14,11 @@
 	const userImage = $derived($session.data?.user?.image);
 	const chatId = $derived(page.url.searchParams.get('id') || undefined);
 
-	// Fetch chats if user is authenticated
-	const chats = $derived(
-		isAuthenticated && $session.data?.user?.id
-			? await getChats({ userId: $session.data.user.id })
-			: []
-	);
-
-	// Fetch active chat if chatId is present and user is authenticated
-	const activeChat = $derived(
-		chatId && isAuthenticated && $session.data?.user?.id
-			? await getChat({ userId: $session.data.user.id, chatId })
-			: null
-	);
+	const chats = $derived((await data.chats) || []);
 
 	// Map the messages to the correct format for Chat class
 	const initialMessages = $derived(
-		activeChat?.messages.map((msg) => ({
+		(await data.activeChat)?.messages?.map((msg) => ({
 			id: msg.id,
 			role: msg.role as 'user' | 'assistant',
 			parts: msg.parts as OurMessage['parts']
