@@ -19,22 +19,17 @@
 	let showSignInModal = $state(false);
 	let input = $state('');
 
-	// Create chat instance with reactive chatId
-	const chat = new Chat<OurMessage>({
-		transport: new DefaultChatTransport({
-			get body() {
-				return {
-					chatId
-				};
+	const chat = $derived(
+		new Chat<OurMessage>({
+			transport: new DefaultChatTransport({ body: { chatId } }),
+			messages: initialMessages,
+			onData: (dataPart) => {
+				if (dataPart.type === 'data-new-chat-created') {
+					goto(`?id=${dataPart.data.chatId}`);
+				}
 			}
-		}),
-		messages: initialMessages,
-		onData: (dataPart) => {
-			if (dataPart.type === 'data-new-chat-created') {
-				goto(`?id=${dataPart.data.chatId}`);
-			}
-		}
-	});
+		})
+	);
 
 	const isLoading = $derived(chat.status === 'streaming');
 
