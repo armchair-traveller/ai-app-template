@@ -5,14 +5,15 @@ import { eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { chat } from '$lib/server/db/schema';
 import { Langfuse } from 'langfuse';
-import { LANGFUSE_SECRET_KEY, NODE_ENV } from '$env/static/private';
+import { LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, NODE_ENV } from '$env/static/private';
 import { streamFromDeepSearch } from '$lib/deep-search';
 import type { OurMessage } from '$lib/types';
 import { messageToString } from '$lib/utils';
 
 const langfuse = new Langfuse({
 	environment: NODE_ENV,
-	secretKey: LANGFUSE_SECRET_KEY
+	secretKey: LANGFUSE_SECRET_KEY,
+	publicKey: LANGFUSE_PUBLIC_KEY
 });
 
 export const _maxDuration = 60;
