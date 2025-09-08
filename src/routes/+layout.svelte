@@ -11,7 +11,4 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<svelte:boundary>
-	{@render children?.()}
-	{#snippet pending()}{/snippet}
-</svelte:boundary>
+{@render children?.()}
