@@ -11,7 +11,7 @@ export async function load({ locals: { user }, url }) {
 	const chatId = url.searchParams.get('id');
 	// Fetch chat if user is authenticated
 	return {
-		chats: await getChats({ userId: user.id }),
-		activeChat: chatId ? await getChat({ userId: user.id, chatId }) : null
+		chats: getChats({ userId: user.id }),
+		activeChat: chatId ? getChat({ userId: user.id, chatId }) : null
 	};
 }

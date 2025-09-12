@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Chat } from '@ai-sdk/svelte';
 	import { DefaultChatTransport } from 'ai';
-	import { afterNavigate, goto } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import IconLoader2 from '~icons/lucide/loader-2';
 	import { ChatMessage } from './chat-message';
 	import SignInModal from './sign-in-modal.svelte';
@@ -20,25 +20,13 @@
 	let input = $state('');
 
 	const chat = new Chat<OurMessage>({
-		transport: new DefaultChatTransport({
-			body: {
-				get chatId() {
-					return chatId;
-				}
-			}
-		}),
+		transport: new DefaultChatTransport({ body: { chatId } }),
 		messages: initialMessages,
 		onData: (dataPart) => {
 			if (dataPart.type === 'data-new-chat-created') {
 				goto(`?id=${dataPart.data.chatId}`);
 			}
 		}
-	});
-
-	afterNavigate(({ type }) => {
-		if (type == 'enter') return; // Ignore initial load
-		chat.messages = initialMessages;
-		if (type != 'goto') chat.stop(); // Stop previous chat's stream to prevent it appending to active chat
 	});
 
 	const isLoading = $derived(chat.status === 'streaming');

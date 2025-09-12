@@ -14,11 +14,11 @@
 	const userImage = $derived($session.data?.user?.image);
 	const chatId = $derived(page.url.searchParams.get('id') || undefined);
 
-	const chats = $derived(data.chats || []);
+	const chats = $derived((await data.chats) || []);
 
 	// Map the messages to the correct format for Chat class
 	const initialMessages = $derived(
-		data.activeChat?.messages?.map((msg) => ({
+		(await data.activeChat)?.messages?.map((msg) => ({
 			id: msg.id,
 			role: msg.role as 'user' | 'assistant',
 			parts: msg.parts as OurMessage['parts']
