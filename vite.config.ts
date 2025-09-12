@@ -23,8 +23,13 @@ export default defineConfig({
 				test: {
 					name: 'server',
 					environment: 'node',
-					include: ['src/**/*.{test,spec}.{js,ts}'],
-					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
+					// evalite-only tests
+					include: ['src/evals/**/*.eval.{js,ts}'],
+					testTimeout: 60_000,
+					sequence: { concurrent: false }
+					// optionally, include for app tests
+					// include: ['src/**/*.{test,spec}.{js,ts}'],
+					// exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
 				}
 			}
 		]
