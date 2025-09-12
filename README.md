@@ -1,37 +1,34 @@
-# Checklist
+# AI App Template -- In Svelte!
 
-- [x] figure out a MD lib to use
-- [ ] Goal: build the final day app from scratch (based on DeepSearch final day already migrated to AI SDK v5)
+> Yep, this is done.
 
-Optional implementations not included as not part of the main branch
+## TODO
 
-- [ ] @upstash/ratelimit for rate limiting
+Do related followup questions.
 
-# sv
+Handle anonymous requests to the API, rate limit by IP.
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Use a chunking system on the crawled information.
 
-## Creating a project
+Add 'edit' button, and 'rerun from here' button.
 
-If you're seeing this, you've probably already done this step. Congrats!
+Add evals.
 
-```sh
-# create a new project in the current directory
-npx sv create
+Handle conversations longer than the context window by summarizing.
 
-# create a new project in my-app
-npx sv create my-app
-```
+How do you get the LLM to ask followup questions?
+
+---
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Once you've created a project and installed dependencies with `pnpm install`, start a development server:
 
 ```sh
-npm run dev
+pnpm dev
 
 # or start the server and open the app in a new browser tab
-npm run dev -- --open
+pnpm dev -- --open
 ```
 
 ## Building
@@ -39,9 +36,9 @@ npm run dev -- --open
 To create a production version of your app:
 
 ```sh
-npm run build
+pnpm build
 ```
 
-You can preview the production build with `npm run preview`.
+You can preview the production build with `pnpm preview`.
 
 > To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
