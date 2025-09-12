@@ -17,7 +17,7 @@
 
 ### Database
 
-- [server/db/schema.ts](/src/lib/server/db/schema.ts) - Drizzle schema definitions
+- [server/db/schema.ts](/src/lib/server/db/schema.ts) - Drizzle schema definitio
 - [server/db/queries.ts](/src/lib/server/db/queries.ts) - Database helper functions
 
 ### Authentication
@@ -27,7 +27,7 @@
 ### Configuration
 
 - [.env](.env) - Environment variables
-- `$env/static/private`, `$env/dynamic/private`, `$env/static/public`, `$env/dynamic/public` - Type-safe environment variable validation
+- `$env/static/private`, `$env/dynamic/private`, `$env/static/public`, `$env/dynamic/public` - Type-safe environment variable validationns
 
 ## Package Management
 
