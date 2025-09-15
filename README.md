@@ -1,7 +1,7 @@
 # AI App Template -- In Svelte!
 
 > Yep, this is done. Original code ported from AI Hero repo.
-> This branch only covers required code 1:1. Optionals like the TODO below are completed in the main branch.
+> This branch covers required AND optional code. For non-optional code only, which is a mirror of 07-migrated-to-v5, see the `init` branch.
 
 ## TODO
 
