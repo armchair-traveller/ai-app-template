@@ -27,7 +27,7 @@
 ### Configuration
 
 - [.env](.env) - Environment variables
-- `$env/static/private`, `$env/dynamic/private`, `$env/static/public`, `$env/dynamic/public` - Type-safe environment variable validationns
+- `$env/static/private`, `$env/dynamic/private`, `$env/static/public`, `$env/dynamic/public` - Type-safe environment variable validations
 
 ## Package Management
 
