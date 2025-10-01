@@ -29,34 +29,30 @@ export async function POST({ request, locals: { user } }) {
 
 	const body = (await request.json()) as {
 		messages: Array<UIMessage>;
-		chatId?: string;
+		chatId: string;
+		isNewChat?: boolean;
 	};
 
-	const { messages, chatId } = body;
+	const { messages, chatId, isNewChat } = body;
 
-	if (!messages.length) {
-		return new Response('No messages provided', { status: 400 });
-	}
+	if (!messages.length) return new Response('No messages provided', { status: 400 });
 
 	// If no chatId is provided, create a new chat with the user's message
 	let currentChatId = chatId;
-	if (!currentChatId) {
-		const newChatId = crypto.randomUUID();
+	if (isNewChat) {
 		await upsertChat({
 			userId: user.id,
-			chatId: newChatId,
+			chatId,
 			title: messageToString(messages[messages.length - 1]!).slice(0, 50) + '...',
 			messages: messages // Only save the user's message initially
 		});
-		currentChatId = newChatId;
 	} else {
 		// Verify the chat belongs to the user
 		const chatResult = await db.query.chat.findFirst({
 			where: eq(chat.id, currentChatId)
 		});
-		if (!chatResult || chatResult.userId !== user.id) {
+		if (!chatResult || chatResult.userId !== user.id)
 			return new Response('Chat not found or unauthorized', { status: 404 });
-		}
 	}
 
 	const trace = langfuse.trace({
@@ -95,9 +91,7 @@ export async function POST({ request, locals: { user } }) {
 			const entireConversation = [...messages, ...response.messages];
 
 			const lastMessage = entireConversation[entireConversation.length - 1];
-			if (!lastMessage) {
-				return;
-			}
+			if (!lastMessage) return;
 
 			// Save the complete chat history
 			await upsertChat({
@@ -111,7 +105,5 @@ export async function POST({ request, locals: { user } }) {
 		}
 	});
 
-	return createUIMessageStreamResponse({
-		stream
-	});
+	return createUIMessageStreamResponse({ stream });
 }

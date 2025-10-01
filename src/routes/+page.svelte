@@ -1,24 +1,24 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { authClient } from '$lib/auth-client';
-	import IconPlus from '~icons/lucide/plus';
-	import ChatPage from '$lib/components/chat.svelte';
 	import AuthButton from '$lib/components/auth-button.svelte';
+	import ChatPage from '$lib/components/chat.svelte';
 	import type { OurMessage } from '$lib/types';
+	import IconPlus from '~icons/lucide/plus';
+	import { getData } from './data.remote';
 
-	let { data } = $props();
+	const searchParams = $derived(page.url.searchParams);
+	const chatIdFromUrl = $derived(searchParams.get('id'));
+	const isNewChat = $derived(!chatIdFromUrl);
+	const chatId = $derived(chatIdFromUrl ?? crypto.randomUUID());
+	const { user, chats, activeChat } = $derived(await getData(chatId));
 
-	const session = authClient.useSession();
-	const userName = $derived($session.data?.user?.name ?? 'Guest');
-	const isAuthenticated = $derived(!!$session.data?.user);
-	const userImage = $derived($session.data?.user?.image);
-	const chatId = $derived(page.url.searchParams.get('id') || undefined);
-
-	const chats = $derived((await data.chats) || []);
+	const userName = $derived(user?.name ?? 'Guest');
+	const isAuthenticated = $derived(!!user);
+	const userImage = $derived(user?.image);
 
 	// Map the messages to the correct format for Chat class
 	const initialMessages = $derived(
-		(await data.activeChat)?.messages?.map((msg) => ({
+		activeChat?.messages?.map((msg) => ({
 			id: msg.id,
 			role: msg.role as 'user' | 'assistant',
 			parts: msg.parts as OurMessage['parts']
@@ -72,6 +72,7 @@
 			<AuthButton {isAuthenticated} {userImage} />
 		</div>
 	</div>
-
-	<ChatPage {userName} {isAuthenticated} {chatId} {initialMessages} />
+	{#key activeChat}
+		<ChatPage {userName} {isAuthenticated} {chatId} {initialMessages} {isNewChat} />
+	{/key}
 </div>

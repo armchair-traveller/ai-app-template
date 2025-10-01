@@ -10,21 +10,23 @@
 	interface Props {
 		userName: string;
 		isAuthenticated: boolean;
-		chatId: string | undefined;
+		chatId: string;
+		isNewChat: boolean;
 		initialMessages: OurMessage[];
 	}
 
-	let { userName, isAuthenticated, chatId, initialMessages }: Props = $props();
+	let { userName, isAuthenticated, chatId, initialMessages, isNewChat }: Props = $props();
 
 	let showSignInModal = $state(false);
 	let input = $state('');
 
 	const chat = new Chat<OurMessage>({
-		transport: new DefaultChatTransport({ body: { chatId } }),
+		transport: new DefaultChatTransport({ body: { chatId, isNewChat } }),
 		messages: initialMessages,
-		onData: (dataPart) => {
+		onData(dataPart) {
 			if (dataPart.type === 'data-new-chat-created') {
-				goto(`?id=${dataPart.data.chatId}`);
+				// ? Types aren't flowing in for some reason. Ignore for now, low priority as it works in other codebases and also works fine outside of init.
+				goto(`?id=${(dataPart.data as { chatId: string }).chatId}`);
 			}
 		}
 	});
