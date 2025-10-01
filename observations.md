@@ -1,3 +1,12 @@
+## Observations
+
+### Remote Functions
+
+- Init branch is outdated, and doesn't use remote functions, which is the way to do RSC in SvelteKit. It shouldn't have used load functions in the first place. That said, I won't go back and fix it given you should have new chat working in the first place, which this branch does.
+- The implementation is a bit different because remote functions work differently than RSC and is more similar to load fn... except it can be called from in script or template. This async behavior is more powerful/flexible but can be unnatural at first when coming from RSC as its behavior allows you to be far more granular in updates without much boilerplate.
+
+## Init Branch Observations
+
 based on DeepSearch final day already migrated to AI SDK v5 (main: 07-migrated-to-v5)
 
 - Doesn't include optional implementations not in that folder.
