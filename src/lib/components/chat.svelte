@@ -24,10 +24,7 @@
 		transport: new DefaultChatTransport({ body: { chatId, isNewChat } }),
 		messages: initialMessages,
 		onData(dataPart) {
-			if (dataPart.type === 'data-new-chat-created') {
-				// ? Types aren't flowing in for some reason. Ignore for now, low priority as it works in other codebases and also works fine outside of init.
-				goto(`?id=${(dataPart.data as { chatId: string }).chatId}`);
-			}
+			if (dataPart.type === 'data-new-chat-created') goto(`?id=${dataPart.data.chatId}`);
 		}
 	});
 
